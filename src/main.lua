@@ -74,9 +74,15 @@ function draw_me()
 	love.graphics.circle("fill", chordherox, chordheroy, 5, 100)
 end
 
+function draw_zombies()
+	love.graphics.setColor( 0, 255, 0, 255 )
+	love.graphics.rectangle("fill", stepx*40+2, stepy*14+2, stepx-4, stepy-4)
+end
+
 function love.draw()
     draw_grid(80,25)
 	draw_me()
+	draw_zombies()
 end
 
 
