@@ -70,6 +70,7 @@ function draw_grid(line_width , line_height)--Функция рисующая с
 end
 
 function draw_me()
+	love.graphics.setColor( 200, 200, 200, 255 )
 	love.graphics.circle("fill", chordherox, chordheroy, 5, 100)
 end
 
