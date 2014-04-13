@@ -70,8 +70,10 @@ function draw_grid(line_width , line_height)--Функция рисующая с
 end
 
 function draw_me()
+	image = love.graphics.newImage("Images/human.png")
 	love.graphics.setColor( 200, 200, 200, 255 )
-	love.graphics.circle("fill", chordherox, chordheroy, 5, 100)
+	love.graphics.draw( image, chordherox, chordheroy, 0, 1, 1, 7, 10)
+	--love.graphics.circle("fill", chordherox, chordheroy, 5, 100)
 end
 
 function draw_zombies()
