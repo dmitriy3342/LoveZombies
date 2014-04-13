@@ -6,6 +6,7 @@ function love.load()
 	chordheroy = height/2
 	stepx = width/80
 	stepy = height/25
+	zombies = {}
 end
 
 function love.keypressed(button)
@@ -69,14 +70,26 @@ function draw_grid(line_width , line_height)--Функция рисующая с
     end
 end
 
-function draw_me()
+function draw_me()--Рисуем Player(игрока)
 	image = love.graphics.newImage("Images/human.png")
 	love.graphics.setColor( 200, 200, 200, 255 )
 	love.graphics.draw( image, chordherox, chordheroy, 0, 1, 1, 7, 10)
 	--love.graphics.circle("fill", chordherox, chordheroy, 5, 100)
 end
 
-function draw_zombies()
+function create_zombies()--Создаем зомби
+    local t={}
+    t.x=math.random(79)*stepx
+    t.y=math.random(24)*stepy
+    t.d_glavn=0
+    t.d_poboch=0
+    local dx = math.random(150)
+    if dx<50 then
+    	vx =
+    return t
+end
+
+function draw_zombies()--Рисуем зомби
 	love.graphics.setColor( 0, 255, 0, 255 )
 	love.graphics.rectangle("fill", stepx*40+2, stepy*14+2, stepx-4, stepy-4)
 end
