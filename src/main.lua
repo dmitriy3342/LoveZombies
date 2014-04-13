@@ -2,7 +2,7 @@ function love.load()
 	width = 1244
 	height = 600
 	love.window.setMode( width, height )
-	chordherox = width/2
+	chordherox = width/2-width/80/2--рисуем начальное положение
 	chordheroy = height/2
 	stepx = width/80
 	stepy = height/25
@@ -69,13 +69,18 @@ function draw_grid(line_width , line_height)--Функция рисующая с
     end
 end
 
+function draw_me()
+	love.graphics.circle("fill", chordherox, chordheroy, 5, 100)
+end
+
 function love.draw()
     draw_grid(80,25)
+	draw_me()
 end
 
 
 
 function love.update(dt)
 
-  
+
 end
