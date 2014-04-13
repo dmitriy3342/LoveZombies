@@ -1,25 +1,81 @@
 function love.load()
-    width=900
-    height=600
-    
-    love.window.setMode(w,h)--размер экрана 
+	width = 1244
+	height = 600
+	love.window.setMode( width, height )
+	chordherox = width/2
+	chordheroy = height/2
+	stepx = width/80
+	stepy = height/25
 end
 
+function love.keypressed(button)
+	if (button == 'q') then
+		if chordherox-stepx>0 and chordheroy-stepy>0 then
+			chordherox = chordherox-stepx
+			chordheroy = chordheroy-stepy
+		end
+	end
+	if (button == 'w') then
+		if chordheroy-stepy>0 then
+			chordheroy = chordheroy-stepy
+		end
+	end
+	if (button == 'e') then
+		if chordherox+stepx<width and chordheroy-stepy>0 then
+			chordherox = chordherox+stepx
+			chordheroy = chordheroy-stepy
+		end
+	end
+	if (button == 'a') then
+		if chordherox-stepx>0 then
+			chordherox = chordherox-stepx
+		end
+	end
+	if (button == 'd') then
+		if chordherox+stepx<width then
+			chordherox = chordherox+stepx
+		end
+	end
+	if (button == 'z') then
+		if chordherox-stepx>0 and chordheroy+stepy<height then
+			chordherox = chordherox-stepx
+			chordheroy = chordheroy+stepy
+		end
+	end
+	if (button == 'x') then
+		if chordheroy+stepy<height then
+			chordheroy = chordheroy+stepy
+		end
+	end
+	if (button == 'c') then
+		if chordherox+stepx<width and chordheroy+stepy<height then
+			chordherox = chordherox+stepx
+			chordheroy = chordheroy+stepy
+		end
+	end
+end
 
-function love.draw()--Функция рисует
-    
-    x 
-    
-    for i=1,w do
-        love.graphics.line()
-         --love.graphics.setColor(balls[i].color.r,balls[i].color.g,balls[i].color.b,255)
-         --love.graphics.circle("fill",balls[i].x,balls[i].y,balls[i].r,100)
+function draw_grid(line_width , line_height)--Функция рисующая сетку
+	love.graphics.setColor( 50, 50, 50, 255 )
+    linex = stepx 
+    liney = stepy 
+    for i=0,(line_height-2) do
+        love.graphics.line(0,liney,width,liney)
+        liney = liney+stepy
     end
-
+    for i=0,(line_width-2) do
+        love.graphics.line(linex,0,linex,height)
+        linex = linex+stepx
+    end
 end
+
+function love.draw()
+    draw_grid(80,25)
+end
+
+
 
 function love.update(dt)
 
   
 end
-  
