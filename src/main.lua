@@ -17,8 +17,8 @@ function love.load()
 	start_game = false
 	num_level = 0
 	delay_time = nil
-	local random_audio = (math.random(1,3))
-	underground_audio = love.audio.newSource("audio/music"..random_audio..".mp3")
+	local num_audio = 1
+	underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
 	love.audio.play(underground_audio)
 end
 
@@ -36,8 +36,6 @@ function love.mousepressed(chordx, chordy, button)
 			dead_hero = false
 			num_level = 0
 			start_game = true
-			local random_audio = (math.random(1,3))
-			underground_audio = love.audio.newSource("audio/music"..random_audio..".mp3")
 			love.audio.play(underground_audio)
 		end
 	end
@@ -159,6 +157,9 @@ function dead_zombies()
 				local chordy = zombies[i][y]
 				while wall[chordx][chordy] == true do
 					wall[chordx][chordy] = false
+					destroy_wallx = chordx
+					destroy_wally = chordy
+					destroy_wall = true
 					chordx = chordx+1
 					if (chordx <1) then
 						break
@@ -219,6 +220,7 @@ function draw_me()--Рисуем Player(игрока)
 end
 
 
+
 function draw_zombies()--Рисуем зомби
 	love.graphics.setColor( 0, 255, 0, 255 )
 	zombie_image = love.graphics.newImage("Images/zombie.png")
@@ -245,13 +247,9 @@ function love.draw()
 			if dead_hero == true then
 				love.graphics.print("You lose:)", width/2, height/2)
 				love.graphics.print("Press R to restart:)", width/2, height/2+100)
-				love.audio.stop()
-				underground_audio = nil
 			else
 				love.graphics.print("You Win!!! Congratulation:)", width/2, height/2)
 				love.graphics.print("Press R to restart:)", width/2, height/2+100)
-				love.audio.stop()
-				underground_audio = nil
 			end
 		end
 	else
@@ -260,7 +258,12 @@ function love.draw()
 			love.graphics.print("Start Game", width/2-50, height/2)
 		end
 	end
-	
+	if underground_audio:isStopped() then
+		love.audio.stop()
+		num_audio = num_audio+1
+		underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
+		love.audio.play(underground_audio)
+	end
 end
 
 function inition_walls()
@@ -290,7 +293,7 @@ end
 
 function start_levels()
 	num_level = num_level+1
-	Title = "level "..num_level
+	Title = "Zonbies - Level "..num_level
 	love.window.setTitle(Title)
 	sum_zombies = sum_zombies+8*num_level
 	inition_walls()
