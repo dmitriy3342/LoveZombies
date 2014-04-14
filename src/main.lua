@@ -7,7 +7,7 @@ function love.load()
 	stepx = width/80
 	stepy = height/25
 	wall = {}
-	zombies = {}
+	zombies = {}--Mассив зомби:)
 	sum_zombies = -7 -- количество зомби
 	start_level = false
 	x = "x"--координаты для зомбарей
@@ -197,8 +197,8 @@ end
 
 function draw_grid(line_width , line_height)--Функция рисующая сетку
 	love.graphics.setColor( 50, 50, 50, 255 )
-    linex = stepx 
-    liney = stepy 
+    local linex = stepx 
+    local liney = stepy 
     for i=0,(line_height-2) do
         love.graphics.line(0,liney,width,liney)
         liney = liney+stepy
@@ -209,14 +209,17 @@ function draw_grid(line_width , line_height)--Функция рисующая с
     end
 end
 
-function draw_me()
+
+function draw_me()--Рисуем Player(игрока)
+
 	local me_image = love.graphics.newImage("Images/human.png")
 	love.graphics.setColor( 200, 200, 200, 255 )
 	local chordx, chordy = zoom(chordherox, chordheroy)
 	love.graphics.draw( me_image, chordx, chordy, 0, stepx/15.5, stepy/25, 0, 0)
 end
 
-function draw_zombies()
+
+function draw_zombies()--Рисуем зомби
 	love.graphics.setColor( 0, 255, 0, 255 )
 	zombie_image = love.graphics.newImage("Images/zombie.png")
 	for i = 1, sum_zombies do
@@ -299,5 +302,4 @@ end
 
 
 function love.update(dt)
-	delay_time = dt
 end
