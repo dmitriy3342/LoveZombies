@@ -8,11 +8,13 @@ function love.load()
 	stepy = height/25
 	wall = {}
 	zombies = {}
-	sum_zombies = 1 -- количество зомби
+	sum_zombies = -7 -- количество зомби
 	start_level = false
 	x = "x"--координаты для зомбарей
 	y = "y"--
 	have_zombies = true
+	dead_hero = false
+	num_level = 0
 end
 
 function zoom(chordx, chordy)
@@ -108,6 +110,9 @@ function move_zombies()
 					zombies[i][y] = zombies[i][y] + 2
 				end
 			end
+			if chordherox == zombies[i][x] and chordheroy == zombies[i][y] then
+				dead_hero = true
+			end
 		end
 	end
 end
@@ -122,11 +127,17 @@ function dead_zombies()
 				while wall[chordx][chordy] == true do
 					wall[chordx][chordy] = false
 					chordx = chordx+1
+					if (chordx <1) then
+						break
+					end
 				end
 				chordx = zombies[i][x]-1
 				while wall[chordx][chordy] == true do
 					wall[chordx][chordy] = false
 					chordx = chordx-1
+					if (chordx <1) then
+						break
+					end
 				end
 				zombies[i] = "Dead"
 			else
@@ -184,15 +195,18 @@ function draw_zombies()
 end
 
 function love.draw()
-	if start_level == true then
-		draw_wall()
-		love.graphics.print(chordherox, 10, 5)
-		love.graphics.print(chordheroy, 30, 5)
-		draw_grid(80,25)
-		draw_me()
-		draw_zombies()
+	if dead_hero == false then
+		if start_level == true then
+			draw_wall()
+			draw_grid(80,25)
+			draw_me()
+			draw_zombies()
+			
+		else
+			start_levels()
+		end
 	else
-		start_levels()
+		love.graphics.print("You lose:)", 10, 5)
 	end
 end
 
@@ -222,7 +236,10 @@ function inition_zombies()
 end
 
 function start_levels()
-	sum_zombies = sum_zombies+4
+	num_level = num_level+1
+	Title = "level "..num_level
+	love.window.setTitle(Title)
+	sum_zombies = sum_zombies+8*num_level
 	inition_walls()
 	inition_zombies()
 	chordherox = 40
