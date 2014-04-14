@@ -17,9 +17,10 @@ function love.load()
 	start_game = false
 	num_level = 0
 	delay_time = nil
-	local num_audio = 1
+	num_audio = 1
 	underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
 	love.audio.play(underground_audio)
+	timer = 0--для функции update
 end
 
 function zoom(chordx, chordy)
@@ -36,7 +37,7 @@ function love.mousepressed(chordx, chordy, button)
 			dead_hero = false
 			num_level = 0
 			start_game = true
-			love.audio.play(underground_audio)
+			start_levels()
 		end
 	end
 end
@@ -174,6 +175,8 @@ function dead_zombies()
 					end
 				end
 				zombies[i] = "Dead"
+				local creeper_dead_audio = love.audio.newSource("audio/creeperdeath.ogg")
+				love.audio.play(creeper_dead_audio)
 			else
 				start_level = true
 			end
@@ -212,7 +215,6 @@ end
 
 
 function draw_me()--Рисуем Player(игрока)
-
 	local me_image = love.graphics.newImage("Images/human.png")
 	love.graphics.setColor( 200, 200, 200, 255 )
 	local chordx, chordy = zoom(chordherox, chordheroy)
@@ -240,6 +242,7 @@ function love.draw()
 				draw_grid(80,25)
 				draw_me()
 				draw_zombies()
+				love.graphics.print(timer, 10, 100)
 			else
 				start_levels()
 			end
@@ -260,7 +263,11 @@ function love.draw()
 	end
 	if underground_audio:isStopped() then
 		love.audio.stop()
-		num_audio = num_audio+1
+		if (num_audio<6) then
+			num_audio = num_audio+1
+		else
+			num_audio = 1
+		end
 		underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
 		love.audio.play(underground_audio)
 	end
@@ -305,4 +312,12 @@ end
 
 
 function love.update(dt)
+	timer = timer+dt
+	local rand = math.random(1, 10)
+	if timer>rand then
+		timer = 0
+		local creeper_say_audio = love.audio.newSource("audio/creeper"..(math.random(1, 4))..".ogg")
+		love.audio.play(creeper_say_audio)
+		rand = math.random(1, 20)
+	end
 end
