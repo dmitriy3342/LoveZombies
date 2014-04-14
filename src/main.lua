@@ -14,71 +14,102 @@ function love.load()
 	y = "y"--
 	have_zombies = true
 	dead_hero = false
+	start_game = false
 	num_level = 0
+	delay_time = nil
+	local random_audio = (math.random(1,3))
+	underground_audio = love.audio.newSource("audio/music"..random_audio..".mp3")
+	love.audio.play(underground_audio)
 end
 
 function zoom(chordx, chordy)
 	return (chordx-1)*stepx, (chordy-1)*stepy
 end
 
+function love.mousepressed(chordx, chordy, button)
+	if start_game == false then
+		if chordx < width/2+100 and chordx > width/2-100 and chordy < height/2+30 and chordy > height/2-30 then
+			chordherox = 40
+			chordheroy = 12
+			sum_zombies = -7
+			have_zombies = true
+			dead_hero = false
+			num_level = 0
+			start_game = true
+			local random_audio = (math.random(1,3))
+			underground_audio = love.audio.newSource("audio/music"..random_audio..".mp3")
+			love.audio.play(underground_audio)
+		end
+	end
+end
+
 function love.keypressed(button)
-	local movehero = false -- датчик движения героя
-	if (button == 'q') then
-		if (chordherox-1>0 and chordheroy-1>0) and (wall[chordherox-1][chordheroy-1] == false) then
-			chordherox = chordherox-1
-			chordheroy = chordheroy-1
-			movehero = true
+	if start_game == true then
+		local movehero = false -- датчик движения героя
+		if (button == 'q') then
+			if (chordherox-1>0 and chordheroy-1>0) and (wall[chordherox-1][chordheroy-1] == false) then
+				chordherox = chordherox-1
+				chordheroy = chordheroy-1
+				movehero = true
+			end
 		end
-	end
-	if (button == 'w') then
-		if chordheroy-1>0 and wall[chordherox][chordheroy-1] == false then
-			chordheroy = chordheroy-1
-			movehero = true
+		if (button == 'w') then
+			if chordheroy-1>0 and wall[chordherox][chordheroy-1] == false then
+				chordheroy = chordheroy-1
+				movehero = true
+			end
 		end
-	end
-	if (button == 'e') then
-		if chordherox+1<81 and chordheroy-1>0 and (wall[chordherox+1][chordheroy-1] == false) then
-			chordherox = chordherox+1
-			chordheroy = chordheroy-1
-			movehero = true
+		if (button == 'e') then
+			if chordherox+1<81 and chordheroy-1>0 and (wall[chordherox+1][chordheroy-1] == false) then
+				chordherox = chordherox+1
+				chordheroy = chordheroy-1
+				movehero = true
+			end
 		end
-	end
-	if (button == 'a') then
-		if chordherox-1>0 and (wall[chordherox-1][chordheroy] == false) then
-			chordherox = chordherox-1
-			movehero = true
+		if (button == 'a') then
+			if chordherox-1>0 and (wall[chordherox-1][chordheroy] == false) then
+				chordherox = chordherox-1
+				movehero = true
+			end
 		end
-	end
-	if (button == 'd') then
-		if chordherox+1<81 and (wall[chordherox+1][chordheroy] == false)then
-			chordherox = chordherox+1
-			movehero = true
+		if (button == 'd') then
+			if chordherox+1<81 and (wall[chordherox+1][chordheroy] == false)then
+				chordherox = chordherox+1
+				movehero = true
+			end
 		end
-	end
-	if (button == 'z') then
-		if chordherox-1>0 and chordheroy+1<26 and (wall[chordherox-1][chordheroy+1] == false)then
-			chordherox = chordherox-1
-			chordheroy = chordheroy+1
-			movehero = true
+		if (button == 'z') then
+			if chordherox-1>0 and chordheroy+1<26 and (wall[chordherox-1][chordheroy+1] == false)then
+				chordherox = chordherox-1
+				chordheroy = chordheroy+1
+				movehero = true
+			end
 		end
-	end
-	if (button == 'x') then
-		if chordheroy+1<26 and (wall[chordherox][chordheroy+1] == false) then
-			chordheroy = chordheroy+1
-			movehero = true
+		if (button == 'x') then
+			if chordheroy+1<26 and (wall[chordherox][chordheroy+1] == false) then
+				chordheroy = chordheroy+1
+				movehero = true
+			end
 		end
-	end
-	if (button == 'c') then
-		if chordherox+1<81 and chordheroy+1<26  and (wall[chordherox+1][chordheroy+1] == false) then
-			chordherox = chordherox+1
-			chordheroy = chordheroy+1
-			movehero = true
+		if (button == 'c') then
+			if chordherox+1<81 and chordheroy+1<26  and (wall[chordherox+1][chordheroy+1] == false) then
+				chordherox = chordherox+1
+				chordheroy = chordheroy+1
+				movehero = true
+			end
 		end
-	end
-	
-	if movehero == true then
-		move_zombies()
-		dead_zombies()
+		if button == "r" then
+			if (dead_hero == true) or (start_game == true and sum_zombies>185) then
+				start_game = false
+			end
+		end
+		if movehero == true then
+			local num_audio = math.random(1, 4)
+			local step_audio = love.audio.newSource("audio/step"..(num_audio)..".ogg")
+			love.audio.play(step_audio)
+			move_zombies()
+			dead_zombies()
+		end
 	end
 end
 
@@ -111,6 +142,8 @@ function move_zombies()
 				end
 			end
 			if chordherox == zombies[i][x] and chordheroy == zombies[i][y] then
+				local dead_audio = love.audio.newSource("audio/dead.ogg")
+				love.audio.play(dead_audio)
 				dead_hero = true
 			end
 		end
@@ -195,19 +228,36 @@ function draw_zombies()
 end
 
 function love.draw()
-	if dead_hero == false then
-		if start_level == true then
-			draw_wall()
-			draw_grid(80,25)
-			draw_me()
-			draw_zombies()
-			
+	if start_game == true then
+		if dead_hero == false and sum_zombies<186 then
+			if start_level == true then
+				draw_wall()
+				draw_grid(80,25)
+				draw_me()
+				draw_zombies()
+			else
+				start_levels()
+			end
 		else
-			start_levels()
+			if dead_hero == true then
+				love.graphics.print("You lose:)", width/2, height/2)
+				love.graphics.print("Press R to restart:)", width/2, height/2+100)
+				love.audio.stop()
+				underground_audio = nil
+			else
+				love.graphics.print("You Win!!! Congratulation:)", width/2, height/2)
+				love.graphics.print("Press R to restart:)", width/2, height/2+100)
+				love.audio.stop()
+				underground_audio = nil
+			end
 		end
 	else
-		love.graphics.print("You lose:)", 10, 5)
+		for i = 1, 255 do
+			love.graphics.setColor( 200, i, 200, 255 )
+			love.graphics.print("Start Game", width/2-50, height/2)
+		end
 	end
+	
 end
 
 function inition_walls()
@@ -247,6 +297,7 @@ function start_levels()
 	start_level = true
 end
 
+
 function love.update(dt)
-	
+	delay_time = dt
 end
