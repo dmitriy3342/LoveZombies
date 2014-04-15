@@ -1,7 +1,13 @@
 function love.load()
 	width = 1024--Просьба об изменениях масштаба
 	height = 512--говорить заранее
-	love.window.setMode( width, height )
+
+	if love.window ~= nil then
+		love.window.setMode(width, height)
+	else
+		love.graphics.setMode(width, height)
+	end
+
 	chordherox = 40--начальное положение
 	chordheroy = 12
 	stepx = width/80
@@ -299,10 +305,16 @@ function inition_zombies()
 end
 
 function start_levels()
-	num_level = num_level+1
-	Title = "Zonbies - Level "..num_level
-	love.window.setTitle(Title)
-	sum_zombies = sum_zombies+8*num_level
+	num_level = num_level + 1
+	Title = "Zombies - Level "..num_level
+	
+	if love.window ~= nil then
+		love.window.setTitle(Title)
+	else
+		love.graphics.setCaption(Title)
+	end
+
+	sum_zombies = sum_zombies + 8 * num_level
 	inition_walls()
 	inition_zombies()
 	chordherox = 40
