@@ -1,7 +1,13 @@
 function love.load()
 	width = 1024--Просьба об изменениях масштаба
 	height = 512--говорить заранее
-	love.window.setMode( width, height )
+
+	if love.window ~= nil then
+		love.window.setMode(width, height)
+	else
+		love.graphics.setMode(width, height)
+	end
+
 	chordherox = 40--начальное положение
 	chordheroy = 12
 	stepx = width/80
@@ -21,6 +27,7 @@ function love.load()
 	underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
 	love.audio.play(underground_audio)
 	timer = 0--для функции update
+	rand_time = math.random(1, 10)
 end
 
 function zoom(chordx, chordy)
@@ -255,10 +262,8 @@ function love.draw()
 			end
 		end
 	else
-		for i = 1, 255 do
-			love.graphics.setColor( 200, i, 200, 255 )
+			love.graphics.setColor( math.random(1, 200), math.random(1, 200), 200, 255 )
 			love.graphics.print("Start Game", width/2-50, height/2)
-		end
 	end
 	if underground_audio:isStopped() then
 		love.audio.stop()
@@ -298,10 +303,16 @@ function inition_zombies()
 end
 
 function start_levels()
-	num_level = num_level+1
+	num_level = num_level + 1
 	Title = "Zombies - Level "..num_level
-	love.window.setTitle(Title)
-	sum_zombies = sum_zombies+8*num_level
+	
+	if love.window ~= nil then
+		love.window.setTitle(Title)
+	else
+		love.graphics.setCaption(Title)
+	end
+	
+	sum_zombies = sum_zombies + 8 * num_level
 	inition_walls()
 	inition_zombies()
 	chordherox = 40
@@ -312,11 +323,10 @@ end
 
 function love.update(dt)
 	timer = timer+dt
-	local rand = math.random(1, 10)
-	if timer>rand then
+	if timer>rand_time then
 		timer = 0
 		local creeper_say_audio = love.audio.newSource("audio/creeper"..(math.random(1, 4))..".ogg")
 		love.audio.play(creeper_say_audio)
-		rand = math.random(1, 20)
+		rand_time = math.random(1, 20)
 	end
 end
