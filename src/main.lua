@@ -109,6 +109,33 @@ function love.keypressed(button)
 				start_game = false
 			end
 		end
+		if button == 'p' then--остановка/запуск мелодии
+			if underground_audio:isPaused() then
+				love.audio.play(underground_audio)
+			else
+				love.audio.pause(underground_audio)
+			end
+		end
+		if button == "right" then--следующая песня
+			love.audio.stop()
+			if num_audio<5 then
+				num_audio = num_audio+1
+			else
+				num_audio = 1
+			end
+			underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
+			love.audio.play(underground_audio)
+		end
+		if button == "left" then--предыдущая песня
+			love.audio.stop()
+			if num_audio>1 then
+				num_audio = num_audio-1
+			else
+				num_audio = 5
+			end
+			underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
+			love.audio.play(underground_audio)
+		end
 		if movehero == true then
 			local num_audio = math.random(1, 4)
 			local step_audio = love.audio.newSource("audio/step"..(num_audio)..".ogg")
@@ -267,7 +294,7 @@ function love.draw()
 	end
 	if underground_audio:isStopped() then
 		love.audio.stop()
-		if (num_audio<6) then
+		if num_audio<5 then
 			num_audio = num_audio+1
 		else
 			num_audio = 1
