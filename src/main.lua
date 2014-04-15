@@ -242,7 +242,6 @@ function love.draw()
 				draw_grid(80,25)
 				draw_me()
 				draw_zombies()
-				love.graphics.print(timer, 10, 100)
 			else
 				start_levels()
 			end
@@ -300,7 +299,7 @@ end
 
 function start_levels()
 	num_level = num_level+1
-	Title = "Zonbies - Level "..num_level
+	Title = "Zombies - Level "..num_level
 	love.window.setTitle(Title)
 	sum_zombies = sum_zombies+8*num_level
 	inition_walls()
