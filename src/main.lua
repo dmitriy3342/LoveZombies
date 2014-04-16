@@ -1,11 +1,11 @@
 function love.load()
-	width = 1024--Просьба об изменениях масштаба
-	height = 512--говорить заранее
+	width = 1200--Просьба об изменениях масштаба
+	height = 600--говорить заранее
 
 	if love.window ~= nil then
-		love.window.setMode(width, height)
+		love.window.setMode(width+width/9, height)
 	else
-		love.graphics.setMode(width, height)
+		love.graphics.setMode(width+width/9, height)
 	end
 
 	chordherox = 40--начальное положение
@@ -28,6 +28,13 @@ function love.load()
 	love.audio.play(underground_audio)
 	timer = 0--для функции update
 	rand_time = math.random(1, 10)
+	cells = {}
+	for i = 1, 80 do
+		cells[i] = {}
+		for j = 1, 25 do
+			cells[i][j] = 0
+		end
+	end
 end
 
 function zoom(chordx, chordy)
@@ -45,6 +52,7 @@ function love.mousepressed(chordx, chordy, button)
 			num_level = 0
 			start_game = true
 			start_levels()
+			inition_cells()
 		end
 	end
 end
@@ -142,6 +150,16 @@ function love.keypressed(button)
 			love.audio.play(step_audio)
 			move_zombies()
 			dead_zombies()
+			inition_cells()
+			zombies_in_one_cell()
+		end
+	end
+end
+
+function zombies_in_one_cell()
+	for i = 1, sum_zombies do
+		if zombies[i] ~= "Dead" then
+			cells[zombies[i][x]][zombies[i][y]] = cells[zombies[i][x]][zombies[i][y]]+1
 		end
 	end
 end
@@ -268,7 +286,27 @@ function draw_zombies()--Рисуем зомби
 	end
 end
 
+function draw_cells()
+	love.graphics.setColor(255,255,255,255)
+	for i = 1, 80 do
+		for j = 1, 25 do
+			if cells[i][j] > 1 then
+				local bufx, bufy = zoom(i, j)
+				
+				love.graphics.print(cells[i][j], bufx, bufy)
+			end
+		end
+	end
+end
+
+function draw_readme()
+	love.graphics.setColor( 255, 255, 255, 255 )
+	local readme_image = love.graphics.newImage("Images/ReadMe.png")
+	love.graphics.draw(readme_image, width, 0, 0, width/9/128, height/3/204, 0, 0)
+end
+
 function love.draw()
+	draw_readme()
 	if start_game == true then
 		if dead_hero == false and sum_zombies<186 then
 			if start_level == true then
@@ -276,21 +314,25 @@ function love.draw()
 				draw_grid(80,25)
 				draw_me()
 				draw_zombies()
+				draw_cells()
 			else
 				start_levels()
 			end
 		else
 			if dead_hero == true then
-				love.graphics.print("You lose:)", width/2, height/2)
-				love.graphics.print("Press R to restart:)", width/2, height/2+100)
+				love.graphics.setColor( 255, 0, 0, 255 )
+				local lose_image = love.graphics.newImage("Images/Lose.png")
+				love.graphics.draw(lose_image, width/2-64, height/2-32, 0, 1, 1, 0, 0)
 			else
-				love.graphics.print("You Win!!! Congratulation:)", width/2, height/2)
-				love.graphics.print("Press R to restart:)", width/2, height/2+100)
+				love.graphics.setColor( 0, 255, 0, 255 )
+				local win_image = love.graphics.newImage("Images/Win.png")
+				love.graphics.draw(win_image, width/2-64, height/2-32, 0, 1, 1, 0, 0)
 			end
 		end
 	else
-			love.graphics.setColor( math.random(1, 200), math.random(1, 200), 200, 255 )
-			love.graphics.print("Start Game", width/2-50, height/2)
+			love.graphics.setColor( 255, 0, 0, 255 )
+			local start_image = love.graphics.newImage("Images/Start Game.png")
+			love.graphics.draw(start_image, width/2-64, height/2-32, 0, 1, 1, 0, 0)
 	end
 	if underground_audio:isStopped() then
 		love.audio.stop()
@@ -323,8 +365,19 @@ function inition_zombies()
 		zombies[i][y] = math.random(1, 25)
 		if zombies[i][y] % 2 == 0 then
 			zombies[i][x] = math.random(1, 16)*5
+			if zombies[i][x] == 40 then
+				zombies[i][x] = 45
+			end
 		else
 			zombies[i][x] = math.random(1, 80)
+		end
+	end
+end
+
+function inition_cells()
+	for i = 1, 80 do
+		for j = 1, 25 do
+			cells[i][j] = 0
 		end
 	end
 end
@@ -338,10 +391,10 @@ function start_levels()
 	else
 		love.graphics.setCaption(Title)
 	end
-	
 	sum_zombies = sum_zombies + 8 * num_level
 	inition_walls()
 	inition_zombies()
+	inition_cells()
 	chordherox = 40
 	chordheroy = 12
 	start_level = true
