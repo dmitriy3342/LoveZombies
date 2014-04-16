@@ -14,14 +14,13 @@ function love.load()
 	stepy = height/25
 	wall = {}
 	zombies = {}--Mассив зомби:)
-	sum_zombies = -7 -- количество зомби
+	sum_zombies = -7 -- количество зомби на уровне
+	now_zombies = -7 -- Количество зомби на момент времени
 	start_level = false
 	x = "x"--координаты для зомбарей
 	y = "y"--
-	have_zombies = true
 	dead_hero = false
 	start_game = false
-	num_level = 0
 	delay_time = nil
 	num_audio = 1
 	underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
@@ -47,7 +46,7 @@ function love.mousepressed(chordx, chordy, button)
 			chordherox = 40
 			chordheroy = 12
 			sum_zombies = -7
-			have_zombies = true
+			now_zombies = sum_zombies
 			dead_hero = false
 			num_level = 0
 			start_game = true
@@ -229,6 +228,7 @@ function dead_zombies()
 				zombies[i] = "Dead"
 				local creeper_dead_audio = love.audio.newSource("audio/creeperdeath.ogg")
 				love.audio.play(creeper_dead_audio)
+				now_zombies = now_zombies-1
 			else
 				start_level = true
 			end
@@ -307,27 +307,31 @@ end
 
 function love.draw()
 	draw_readme()
+	if now_zombies>0 then 
+		love.graphics.setColor( 255, 0, 0, 255 )
+		love.graphics.print("Live/Sum", width+10, height/2-20)
+		love.graphics.print(now_zombies.."/"..sum_zombies, width+10, height/2)
+	end
 	if start_game == true then
-		if dead_hero == false and sum_zombies<186 then
-			if start_level == true then
-				draw_wall()
-				draw_grid(80,25)
-				draw_me()
-				draw_zombies()
-				draw_cells()
-			else
-				start_levels()
-			end
-		else
+		if start_level == true then
+			draw_wall()
+			draw_grid(80,25)
+			draw_me()
+			draw_zombies()
+			draw_cells()
 			if dead_hero == true then
 				love.graphics.setColor( 255, 0, 0, 255 )
 				local lose_image = love.graphics.newImage("Images/Lose.png")
-				love.graphics.draw(lose_image, width/2-64, height/2-32, 0, 1, 1, 0, 0)
+				love.graphics.draw(lose_image, width+5, height-128, 0, 1, 1, 0, 0)
 			else
-				love.graphics.setColor( 0, 255, 0, 255 )
-				local win_image = love.graphics.newImage("Images/Win.png")
-				love.graphics.draw(win_image, width/2-64, height/2-32, 0, 1, 1, 0, 0)
+				if sum_zombies+8*(num_level+1)>186 and now_zombies == 0 then
+					love.graphics.setColor( 255, 255, 255, 255 )
+					local win_image = love.graphics.newImage("Images/Win.png")
+					love.graphics.draw(win_image, width+5, height-128, 0, 1, 1, 0, 0)
+				end
 			end
+		else
+			start_levels()
 		end
 	else
 			love.graphics.setColor( 255, 0, 0, 255 )
@@ -384,14 +388,18 @@ end
 
 function start_levels()
 	num_level = num_level + 1
-	Title = "Zombies - Level "..num_level
-	
+	if ( sum_zombies<162) then
+		Title = "Zombies - Level "..num_level
+	else
+		Title = "Zombies - Last Level"
+	end
 	if love.window ~= nil then
 		love.window.setTitle(Title)
 	else
 		love.graphics.setCaption(Title)
 	end
 	sum_zombies = sum_zombies + 8 * num_level
+	now_zombies = sum_zombies
 	inition_walls()
 	inition_zombies()
 	inition_cells()
