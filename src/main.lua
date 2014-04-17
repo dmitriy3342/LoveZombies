@@ -307,14 +307,15 @@ function draw_readme()
 	love.graphics.draw(readme_image, width, 0, 0, width/9/128, height/3/204, 0, 0)
 end
 
+
 function love.draw()
 	draw_readme()
-	if now_zombies>0 then 
-		love.graphics.setColor( 255, 0, 0, 255 )
-		love.graphics.print("Live/Sum", width+10, height/2-20)
-		love.graphics.print(now_zombies.."/"..sum_zombies, width+10, height/2)
-	end
 	if start_game == true then
+		if now_zombies>0 then 
+			love.graphics.setColor( 255, 0, 0, 255 )
+			love.graphics.print("Live/Sum", width+10, height/2-20)
+			love.graphics.print(now_zombies.."/"..sum_zombies, width+10, height/2)
+		end
 		if start_level == true then
 			draw_wall()
 			draw_grid(80,25)
