@@ -14,8 +14,6 @@ function love.load()
 	stepy = height/25
 	wall = {}
 	zombies = {}--Mассив зомби:)
-	sum_zombies = -7 -- количество зомби на уровне
-	now_zombies = -7 -- Количество зомби на момент времени
 	start_level = false
 	x = "x"--координаты для зомбарей
 	y = "y"--
@@ -23,6 +21,7 @@ function love.load()
 	start_game = false
 	delay_time = nil
 	num_audio = 1
+	sum_audio = 8
 	underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
 	love.audio.play(underground_audio)
 	timer = 0--для функции update
@@ -34,6 +33,10 @@ function love.load()
 			cells[i][j] = 0
 		end
 	end
+	Title = "Zombies"
+	k = 6 -- множитель прироста зомби
+	sum_zombies = -k+1 -- количество зомби на уровне
+	now_zombies = -k+1 -- Количество зомби на момент времени
 end
 
 function zoom(chordx, chordy)
@@ -45,7 +48,7 @@ function love.mousepressed(chordx, chordy, button)
 		if chordx < width/2+100 and chordx > width/2-100 and chordy < height/2+30 and chordy > height/2-30 then
 			chordherox = 40
 			chordheroy = 12
-			sum_zombies = -7
+			sum_zombies = -k+1
 			now_zombies = sum_zombies
 			dead_hero = false
 			num_level = 0
@@ -57,7 +60,7 @@ function love.mousepressed(chordx, chordy, button)
 end
 
 function love.keypressed(button)
-	if start_game == true then
+	if start_game == true and dead_hero == false then
 		local movehero = false -- датчик движения героя
 		if (button == 'q') then
 			if (chordherox-1>0 and chordheroy-1>0) and (wall[chordherox-1][chordheroy-1] == false) then
@@ -111,38 +114,7 @@ function love.keypressed(button)
 				movehero = true
 			end
 		end
-		if button == "r" then
-			if (dead_hero == true) or (start_game == true and sum_zombies>185) then
-				start_game = false
-			end
-		end
-		if button == 'p' then--остановка/запуск мелодии
-			if underground_audio:isPaused() then
-				love.audio.play(underground_audio)
-			else
-				love.audio.pause(underground_audio)
-			end
-		end
-		if button == "right" then--следующая песня
-			love.audio.stop()
-			if num_audio<5 then
-				num_audio = num_audio+1
-			else
-				num_audio = 1
-			end
-			underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
-			love.audio.play(underground_audio)
-		end
-		if button == "left" then--предыдущая песня
-			love.audio.stop()
-			if num_audio>1 then
-				num_audio = num_audio-1
-			else
-				num_audio = 5
-			end
-			underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
-			love.audio.play(underground_audio)
-		end
+		
 		if movehero == true then
 			local num_audio = math.random(1, 4)
 			local step_audio = love.audio.newSource("audio/step"..(num_audio)..".ogg")
@@ -152,6 +124,38 @@ function love.keypressed(button)
 			inition_cells()
 			zombies_in_one_cell()
 		end
+	end
+	if button == "r" then
+		if (dead_hero == true) or (start_game == true and sum_zombies>192) then
+			start_game = false
+		end
+	end
+	if button == 'p' then--остановка/запуск мелодии
+		if underground_audio:isPaused() then
+			love.audio.play(underground_audio)
+		else
+			love.audio.pause(underground_audio)
+		end
+	end
+	if button == "right" then--следующая песня
+		love.audio.stop()
+		if num_audio<sum_audio then
+			num_audio = num_audio+1
+		else
+			num_audio = 1
+		end
+		underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
+		love.audio.play(underground_audio)
+	end
+	if button == "left" then--предыдущая песня
+		love.audio.stop()
+		if num_audio>1 then
+			num_audio = num_audio-1
+		else
+			num_audio = sum_audio
+		end
+		underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
+		love.audio.play(underground_audio)
 	end
 end
 
@@ -332,21 +336,29 @@ function love.draw()
 			end
 		else
 			start_levels()
+			
 		end
 	else
 			love.graphics.setColor( 255, 0, 0, 255 )
 			local start_image = love.graphics.newImage("Images/Start Game.png")
 			love.graphics.draw(start_image, width/2-64, height/2-32, 0, 1, 1, 0, 0)
+			Title = "Zombies"
 	end
 	if underground_audio:isStopped() then
 		love.audio.stop()
-		if num_audio<5 then
+		if num_audio<sum_audio then
 			num_audio = num_audio+1
 		else
 			num_audio = 1
 		end
 		underground_audio = love.audio.newSource("audio/music"..num_audio..".mp3")
 		love.audio.play(underground_audio)
+	end
+	
+	if love.window ~= nil then
+		love.window.setTitle(Title)
+	else
+		love.graphics.setCaption(Title)
 	end
 end
 
@@ -388,17 +400,12 @@ end
 
 function start_levels()
 	num_level = num_level + 1
-	if ( sum_zombies<162) then
+	if ( sum_zombies + k * num_level + k * (num_level+1)<192) then
 		Title = "Zombies - Level "..num_level
 	else
 		Title = "Zombies - Last Level"
 	end
-	if love.window ~= nil then
-		love.window.setTitle(Title)
-	else
-		love.graphics.setCaption(Title)
-	end
-	sum_zombies = sum_zombies + 8 * num_level
+	sum_zombies = sum_zombies + k * num_level
 	now_zombies = sum_zombies
 	inition_walls()
 	inition_zombies()
