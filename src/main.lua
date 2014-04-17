@@ -126,9 +126,7 @@ function love.keypressed(button)
 		end
 	end
 	if button == "r" then
-		if (dead_hero == true) or (start_game == true and sum_zombies>192) then
 			start_game = false
-		end
 	end
 	if button == 'p' then--остановка/запуск мелодии
 		if underground_audio:isPaused() then
